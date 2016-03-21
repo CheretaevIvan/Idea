@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_photoeburg" default="compile.module.photoeburg">
+  <dirname property="module.photoeburg.basedir" file="${ant.file.module_photoeburg}"/>
+  
+  <property name="module.jdk.home.photoeburg" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.photoeburg" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.photoeburg" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.photoeburg" value="-encoding windows-1251 -source 1.3 ${compiler.args}"/>
+  
+  <property name="photoeburg.output.dir" value="${module.photoeburg.basedir}/out/production/photoEburg"/>
+  <property name="photoeburg.testoutput.dir" value="${module.photoeburg.basedir}/out/test/photoEburg"/>
+  
+  <path id="photoeburg.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="photoeburg.module.production.classpath">
+    <path refid="${module.jdk.classpath.photoeburg}"/>
+  </path>
+  
+  <path id="photoeburg.runtime.production.module.classpath">
+    <pathelement location="${photoeburg.output.dir}"/>
+  </path>
+  
+  <path id="photoeburg.module.classpath">
+    <path refid="${module.jdk.classpath.photoeburg}"/>
+    <pathelement location="${photoeburg.output.dir}"/>
+  </path>
+  
+  <path id="photoeburg.runtime.module.classpath">
+    <pathelement location="${photoeburg.testoutput.dir}"/>
+    <pathelement location="${photoeburg.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.photoeburg">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.photoeburg">
+    <patternset refid="excluded.from.module.photoeburg"/>
+  </patternset>
+  
+  <path id="photoeburg.module.sourcepath">
+    <dirset dir="${module.photoeburg.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.photoeburg" depends="compile.module.photoeburg.production,compile.module.photoeburg.tests" description="Compile module photoEburg"/>
+  
+  <target name="compile.module.photoeburg.production" depends="register.custom.compilers" description="Compile module photoEburg; production classes">
+    <mkdir dir="${photoeburg.output.dir}"/>
+    <javac2 destdir="${photoeburg.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.photoeburg}/javac">
+      <compilerarg line="${compiler.args.photoeburg}"/>
+      <bootclasspath refid="photoeburg.module.bootclasspath"/>
+      <classpath refid="photoeburg.module.production.classpath"/>
+      <src refid="photoeburg.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.photoeburg"/>
+    </javac2>
+    
+    <copy todir="${photoeburg.output.dir}">
+      <fileset dir="${module.photoeburg.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.photoeburg.tests" depends="register.custom.compilers,compile.module.photoeburg.production" description="compile module photoEburg; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.photoeburg" description="cleanup module">
+    <delete dir="${photoeburg.output.dir}"/>
+    <delete dir="${photoeburg.testoutput.dir}"/>
+  </target>
+</project>
